@@ -32,6 +32,10 @@ hradius = bar_depth/2;
 hheight = 1.2;
 in_radius = 0.85*hradius;
 
+cm_width = 100;
+cm_depth = 50;
+cm_height = 5;
+
 module surface_bar()
 {
     union() {
@@ -107,6 +111,23 @@ module arm()
     }
 }
 
+module ceiling_mount()
+{
+    bolt_offset = 10;
+    union() {
+	difference() {
+	    cube([cm_width, cm_depth, cm_height], center=true);
+	    up(cm_height) left(cm_width/2 - bolt_offset) metric_bolt(size=4, l=cm_height*2, pitch=0);
+	    up(cm_height) right(cm_width/2 - bolt_offset) metric_bolt(size=4, l=cm_height*2, pitch=0);
+	    up(cm_height) metric_bolt(size=4, l=cm_height*2, pitch=0);
+	    down(cm_height/2) metric_nut(size=4, hole=false);
+	}
+	up(cm_height/2) hirthJointSinus(hradius, hteeth, hheight);
+    }
+}
+
+ceiling_mount();
+
 //left(100) arm();
-right(100) surface_bar();
+//right(100) surface_bar();
 //bar_connector();
