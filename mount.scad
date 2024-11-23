@@ -126,7 +126,7 @@ module ceiling_mount()
     }
 }
 
-//back(100) ceiling_mount();
+back(100) ceiling_mount();
 left(100) arm();
-//right(100) surface_bar();
-//bar_connector();
+right(100) surface_bar();
+bar_connector();
