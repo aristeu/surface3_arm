@@ -9,6 +9,12 @@ use <agentscad/hirth-joint.scad>
 // Bar thickness
 bar_height = 7.5;
 
+// Size of each arm's length
+arm_length = 200;
+
+// Tolerance
+t = 0.2;
+
 module __Customizer_Limit__() {}
 // Minimum angle
 $fa = 0.1;
@@ -26,7 +32,7 @@ hradius = bar_depth/2;
 hheight = 1.2;
 in_radius = 0.85*hradius;
 
-module bar()
+module surface_bar()
 {
     union() {
 	difference() {
@@ -54,15 +60,51 @@ module bar_connector()
 		cylinder(h = bc_height, r = hradius);
 	    }
 	    mirror([0, 0, 1]) metric_bolt(size=4, l=bc_height*2, pitch=0);
-	    mirror([0, 0, 1]) metric_bolt(size=6, l=bc_height*0.75, pitch=0);
+	    mirror([0, 0, 1]) metric_bolt(size=6, l=bc_height*0.85, pitch=0);
 	    mirror([0, 0, 1]) fillet_cylinder_mask(r=hradius, fillet=10);
 	    up(bc_height*0.35) cube([hradius, hradius*2, bc_height*0.75], center=true);
 	    up(in_radius) left(hradius) rotate([0, 90, 0]) metric_nut(size=4, hole=false);
 	    up(in_radius) right(hradius) rotate([0, 90, 0]) #metric_bolt(size=4, l=hradius*2, pitch=0);
 	}
 	right(hradius/2) up(in_radius) rotate([0, 270, 0]) hirthJointSinus(in_radius, hteeth, hheight);
+	left(hradius/2) up(in_radius) rotate([0, 90, 0]) hirthJointSinus(in_radius, hteeth, hheight);
     }
 }
 
-//bar();
+module arm_holes(w)
+{
+    union() {
+	rotate([45, 0, 0])cube(w, center=true);
+	back(w/2 + w)rotate([45, 0, 0])cube(w, center=true);
+	back(w + 2*w)rotate([45, 0, 0])cube(w, center=true);
+	forward(w/2 + w)rotate([45, 0, 0])cube(w, center=true);
+	forward(w + 2*w)rotate([45, 0, 0])cube(w, center=true);
+    }
+}
+
+module arm()
+{
+    w = hradius - hheight*4;
+    difference() {
+	union() {
+	    difference() {
+		cube([w, arm_length, in_radius*2], center=true);
+		back(arm_length/2) down(in_radius) fillet_mask_x(l=w, r=in_radius);
+		back(arm_length/2) up(in_radius) fillet_mask_x(l=w, r=in_radius);
+		forward(arm_length/2) down(in_radius) fillet_mask_x(l=w, r=in_radius);
+		forward(arm_length/2) up(in_radius) fillet_mask_x(l=w, r=in_radius);
+		arm_holes(w);
+	    }
+	    right(w/2) forward(arm_length/2 - in_radius) rotate([0,90,0]) hirthJointSinus(in_radius, hteeth, hheight);
+	    left(w/2) forward(arm_length/2 - in_radius) rotate([0,270,0]) hirthJointSinus(in_radius, hteeth, hheight);
+	    right(w/2) back(arm_length/2 - in_radius) rotate([0,90,0]) hirthJointSinus(in_radius, hteeth, hheight);
+	    left(w/2) back(arm_length/2 - in_radius) rotate([0,270,0]) hirthJointSinus(in_radius, hteeth, hheight);
+	}
+	back(arm_length/2 - in_radius) right(w/2) rotate([0, 90, 0]) #metric_bolt(size=4, l=w*2, pitch=0);
+	forward(arm_length/2 - in_radius) right(w/2) rotate([0, 90, 0]) #metric_bolt(size=4, l=w*2, pitch=0);
+    }
+}
+
+left(100) arm();
+//surface_bar();
 bar_connector();
