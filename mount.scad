@@ -101,10 +101,10 @@ module arm()
 		forward(arm_length/2) up(in_radius) fillet_mask_x(l=w, r=in_radius);
 		arm_holes(w);
 	    }
-	    right(w/2) forward(arm_length/2 - in_radius) rotate([0,90,0]) hirthJointSinus(in_radius, hteeth, hheight);
-	    left(w/2) forward(arm_length/2 - in_radius) rotate([0,270,0]) hirthJointSinus(in_radius, hteeth, hheight);
-	    right(w/2) back(arm_length/2 - in_radius) rotate([0,90,0]) hirthJointSinus(in_radius, hteeth, hheight);
-	    left(w/2) back(arm_length/2 - in_radius) rotate([0,270,0]) hirthJointSinus(in_radius, hteeth, hheight);
+	    right(w/2-t) forward(arm_length/2 - in_radius) rotate([0,90,0]) hirthJointSinus(in_radius, hteeth, hheight);
+	    left(w/2-t) forward(arm_length/2 - in_radius) rotate([0,270,0]) hirthJointSinus(in_radius, hteeth, hheight);
+	    right(w/2-t) back(arm_length/2 - in_radius) rotate([0,90,0]) hirthJointSinus(in_radius, hteeth, hheight);
+	    left(w/2-t) back(arm_length/2 - in_radius) rotate([0,270,0]) hirthJointSinus(in_radius, hteeth, hheight);
 	}
 	back(arm_length/2 - in_radius) right(w/2) rotate([0, 90, 0]) #metric_bolt(size=4, l=w*2, pitch=0);
 	forward(arm_length/2 - in_radius) right(w/2) rotate([0, 90, 0]) #metric_bolt(size=4, l=w*2, pitch=0);
@@ -127,6 +127,6 @@ module ceiling_mount()
 }
 
 //back(100) ceiling_mount();
-//left(100) arm();
+left(100) arm();
 //right(100) surface_bar();
-bar_connector();
+//bar_connector();
