@@ -37,10 +37,12 @@ module surface_bar()
     union() {
 	difference() {
 	    cube([bar_width, bar_depth, bar_height]);
-	    right(bar_hole_offset) back(bar_depth/2) cylinder(bar_height, r = bar_hole_radius);
-	    right(bar_width - bar_hole_offset) back(bar_depth/2) cylinder(bar_height, r = bar_hole_radius);
+	    up(10) right(bar_hole_offset) back(bar_depth/2) metric_bolt(size=4, l=20, pitch=0);
+	    up(10) right(bar_width - bar_hole_offset) back(bar_depth/2) metric_bolt(size=4, l=20, pitch=0);
 	    right(bar_width/2) back(bar_depth/2) metric_nut(size=4, hole=false);
 	    right(bar_width/2) back(bar_depth/2) mirror([0, 0, 1]) metric_bolt(size=4, l=20, pitch=0);
+	    up(bar_height) mirror([0,0,1]) right(bar_hole_offset) back(bar_depth/2) metric_nut(size=4, hole=false);
+	    up(bar_height) mirror([0,0,1]) right(bar_width - bar_hole_offset) back(bar_depth/2) metric_nut(size=4, hole=false);
 	}
 	right(bar_width/2) back(bar_depth/2) up(bar_height) hirthJointSinus(hradius, hteeth, hheight);
     }
@@ -105,6 +107,6 @@ module arm()
     }
 }
 
-left(100) arm();
-//surface_bar();
-bar_connector();
+//left(100) arm();
+right(100) surface_bar();
+//bar_connector();
