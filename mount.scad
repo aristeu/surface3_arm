@@ -68,7 +68,7 @@ module bar_connector()
 	    mirror([0, 0, 1]) metric_bolt(size=4, l=bc_height*2, pitch=0);
 	    mirror([0, 0, 1]) metric_bolt(size=6, l=bc_height*0.85, pitch=0);
 	    mirror([0, 0, 1]) fillet_cylinder_mask(r=hradius, fillet=10);
-	    up(bc_height*0.35) cube([hradius, hradius*2, bc_height*0.75], center=true);
+	    up(bc_height*0.35) cube([hradius, hradius*2, bc_height*0.85], center=true);
 	    up(in_radius) left(hradius) rotate([0, 90, 0]) metric_nut(size=4, hole=false);
 	    up(in_radius) right(hradius) rotate([0, 90, 0]) #metric_bolt(size=4, l=hradius*2, pitch=0);
 	}
@@ -126,8 +126,7 @@ module ceiling_mount()
     }
 }
 
-ceiling_mount();
-
+//back(100) ceiling_mount();
 //left(100) arm();
 //right(100) surface_bar();
-//bar_connector();
+bar_connector();
