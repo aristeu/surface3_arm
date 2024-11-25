@@ -65,7 +65,7 @@ module surface_bar()
 module bar_connector()
 {
     bc_height = 50;
-    hole_w = bar_height - hheight*2;
+    hole_w = bar_height + hheight*2;
     /* leave a little room after the hirthJoint ends */
     hole_h = in_radius * 2 + 2;
     union() {
