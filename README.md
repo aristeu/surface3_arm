@@ -1,5 +1,9 @@
-ceiling arm for Surface 3 wallmount/dock by hawker180:
+Was: ceiling arm for Surface 3 wallmount/dock by hawker180:
 	https://www.thingiverse.com/thing:2187506
+
+Ended up making my own sleeve so it's easier to mount sideways
+if the mount is in the back. Also made it simpler (no chamfers)
+because I'm lazy and don't care about appearance.
 
 First attempt on using Hirth Joints. Screws are M4.
 

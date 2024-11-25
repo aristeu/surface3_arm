@@ -6,6 +6,9 @@ use <agentscad/hirth-joint.scad>
 
 // M4 screws
 
+// Wall thickness
+walls = 2;
+
 // Bar thickness
 bar_height = 7.5;
 
@@ -126,7 +129,47 @@ module ceiling_mount()
     }
 }
 
+s3_w1 = 188.122;
+s3_w2 = 181.570;
+s3_h = 9.5;
+s3_d = 267;
+s3_scr_off = 15.5;
+s3_scr_bottom_off = 18;
+s3_w_w = 24;
+s3_w_off = 4;
+s3_ports_w = 150;
+s3_ports_d = 7;
+s3_cutoff = 30;
+module surface3()
+{
+    diff = s3_w1 - s3_w2;
+    linear_extrude(height=s3_d) polygon([[0,0], [188.122, 0], [188.122 - diff/2, 9.5], [diff/2, 9.5]]);
+}
+
+module surface3_sleeve()
+{
+    walls2 = walls*2;
+    sleeve_w = s3_w1 + walls2*2;
+    sleeve_d = s3_h + walls2*2;
+    //sleeve_h = s3_d/2 + walls2 + hradius;
+    sleeve_h = s3_d * 0.7 + walls2;
+    win_hole_h = s3_scr_bottom_off - s3_w_off;
+    difference() {
+	union() {
+	    cube([sleeve_w, sleeve_d, sleeve_h]);
+	    right(sleeve_w/2) up(s3_d/2 + walls2) back(sleeve_d) rotate([270,0,0]) hirthJointSinus(hradius, hteeth, hheight);
+	}
+	right(walls2) back(walls2) up(walls2) surface3();
+	right(sleeve_w/2) back(sleeve_d/2) cube([s3_ports_w, s3_ports_d, walls2*2], center=true);
+	right(sleeve_w/2) up(s3_d/2 + s3_scr_bottom_off) cube([s3_w1 - s3_scr_off*2, walls2*2, s3_d], center=true);
+	right(sleeve_w/2) up(win_hole_h/2 + s3_w_off) cube([s3_w_w, walls2*2, win_hole_h], center=true);
+	right(sleeve_w/2) up(sleeve_h/2 + walls2 + s3_cutoff) cube([s3_w1, walls2*2, sleeve_h - s3_cutoff], center=true);
+	right(sleeve_w/2) up(s3_d/2 + walls2) rotate([90, 0, 0]) metric_bolt(size=4, l=sleeve_h, pitch=0);
+    }
+}
+
+right(100) surface3_sleeve();
 back(100) ceiling_mount();
 left(100) arm();
-right(100) surface_bar();
+//right(100) surface_bar();
 bar_connector();
