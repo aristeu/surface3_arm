@@ -6,11 +6,14 @@ use <agentscad/hirth-joint.scad>
 
 // M4 screws
 
+// which part
+part = 0; // [0: "Sleeve", 1: "Ceiling mount", 2: "Arm", 3: "Bar Connector"]
+
 // Wall thickness
 walls = 2;
 
 // Bar thickness
-bar_height = 7.5;
+bar_height = 25;
 
 // Size of each arm's length
 arm_length = 200;
@@ -20,25 +23,28 @@ t = 0.2;
 
 module __Customizer_Limit__() {}
 // Minimum angle
-$fa = 0.1;
+$fa = 0.5;
 // Minimum size
-$fs = 0.1;
-$fn=100;
+$fs = 0.5;
 
 bar_width = 180;
 bar_depth = 43;
 bar_hole_radius = 2.5;
 bar_hole_offset = 20;
 
-hteeth=21;
+hteeth=40;
 hradius = bar_depth/2;
 hheight = 1.2;
 in_radius = 0.85*hradius;
 
 cm_width = 100;
 cm_depth = 50;
-cm_height = 5;
+/* thickness */
+cm_height = 10;
 
+assert((hradius*2 > bar_height + 14), "Bar height (thickness) should be smaller. Or increase hradius");
+
+/*
 module surface_bar()
 {
     union() {
@@ -54,10 +60,14 @@ module surface_bar()
 	right(bar_width/2) back(bar_depth/2) up(bar_height) hirthJointSinus(hradius, hteeth, hheight);
     }
 }
+*/
 
 module bar_connector()
 {
     bc_height = 50;
+    hole_w = bar_height - hheight*2;
+    /* leave a little room after the hirthJoint ends */
+    hole_h = in_radius * 2 + 2;
     union() {
 	difference() {
 	    /*
@@ -69,31 +79,36 @@ module bar_connector()
 		cylinder(h = bc_height, r = hradius);
 	    }
 	    mirror([0, 0, 1]) metric_bolt(size=4, l=bc_height*2, pitch=0);
-	    mirror([0, 0, 1]) metric_bolt(size=6, l=bc_height*0.85, pitch=0);
+	    //mirror([0, 0, 1]) metric_bolt(size=6, l=bc_height*0.85, pitch=0);
+	    /* nut hole so we can have the screw coming from the sleeve */
+	    up(hole_h) metric_nut(size=4, hole=false);
 	    mirror([0, 0, 1]) fillet_cylinder_mask(r=hradius, fillet=10);
-	    up(bc_height*0.35) cube([hradius, hradius*2, bc_height*0.85], center=true);
+	    up(hole_h/2) cube([hole_w, hradius*2, hole_h], center=true);
 	    up(in_radius) left(hradius) rotate([0, 90, 0]) metric_nut(size=4, hole=false);
-	    up(in_radius) right(hradius) rotate([0, 90, 0]) #metric_bolt(size=4, l=hradius*2, pitch=0);
+	    up(in_radius) right(hradius) rotate([0, 90, 0]) metric_bolt(size=4, l=hradius*2, pitch=0);
 	}
-	right(hradius/2) up(in_radius) rotate([0, 270, 0]) hirthJointSinus(in_radius, hteeth, hheight);
-	left(hradius/2) up(in_radius) rotate([0, 90, 0]) hirthJointSinus(in_radius, hteeth, hheight);
+	right(hole_w/2) up(in_radius) rotate([0, 270, 0]) hirthJointSinus(in_radius, hteeth, hheight);
+	left(hole_w/2) up(in_radius) rotate([0, 90, 0]) hirthJointSinus(in_radius, hteeth, hheight);
     }
 }
 
 module arm_holes(w)
 {
-    union() {
-	rotate([45, 0, 0])cube(w, center=true);
-	back(w/2 + w)rotate([45, 0, 0])cube(w, center=true);
-	back(w + 2*w)rotate([45, 0, 0])cube(w, center=true);
-	forward(w/2 + w)rotate([45, 0, 0])cube(w, center=true);
-	forward(w + 2*w)rotate([45, 0, 0])cube(w, center=true);
+    r = 0.45 * w;
+    off = r * 2 * 1.1;
+    rotate([0, 90, 0]) union() {
+	#cylinder(h=w, r=r, center=true);
+	back(off) cylinder(h=w, r=r, center=true);
+	back(off * 2) cylinder(h=w, r=r, center=true);
+	forward(off) cylinder(h=w, r=r, center=true);
+	forward(off * 2) cylinder(h=w, r=r, center=true);
     }
 }
 
 module arm()
 {
-    w = hradius - hheight*4;
+    //w = hradius - hheight*4;
+    w = bar_height;
     difference() {
 	union() {
 	    difference() {
@@ -109,8 +124,8 @@ module arm()
 	    right(w/2-t) back(arm_length/2 - in_radius) rotate([0,90,0]) hirthJointSinus(in_radius, hteeth, hheight);
 	    left(w/2-t) back(arm_length/2 - in_radius) rotate([0,270,0]) hirthJointSinus(in_radius, hteeth, hheight);
 	}
-	back(arm_length/2 - in_radius) right(w/2) rotate([0, 90, 0]) #metric_bolt(size=4, l=w*2, pitch=0);
-	forward(arm_length/2 - in_radius) right(w/2) rotate([0, 90, 0]) #metric_bolt(size=4, l=w*2, pitch=0);
+	back(arm_length/2 - in_radius) right(w/2) rotate([0, 90, 0]) metric_bolt(size=4, l=w*2, pitch=0);
+	forward(arm_length/2 - in_radius) right(w/2) rotate([0, 90, 0]) metric_bolt(size=4, l=w*2, pitch=0);
     }
 }
 
@@ -140,6 +155,8 @@ s3_w_off = 4;
 s3_ports_w = 150;
 s3_ports_d = 7;
 s3_cutoff = 30;
+/* we don't want to cover the volume buttons */
+s3_vol_offset = 170;
 module surface3()
 {
     diff = s3_w1 - s3_w2;
@@ -151,8 +168,7 @@ module surface3_sleeve()
     walls2 = walls*2;
     sleeve_w = s3_w1 + walls2*2;
     sleeve_d = s3_h + walls2*2;
-    //sleeve_h = s3_d/2 + walls2 + hradius;
-    sleeve_h = s3_d * 0.7 + walls2;
+    sleeve_h = s3_vol_offset + walls2;
     win_hole_h = s3_scr_bottom_off - s3_w_off;
     difference() {
 	union() {
@@ -168,8 +184,9 @@ module surface3_sleeve()
     }
 }
 
-right(100) surface3_sleeve();
-back(100) ceiling_mount();
-left(100) arm();
-//right(100) surface_bar();
-bar_connector();
+if (part == 0) surface3_sleeve();
+if (part == 1) ceiling_mount();
+if (part == 2) arm();
+if (part == 3) bar_connector();
+//if (part == 99)surface_bar();
+
