@@ -21,6 +21,9 @@ arm_length = 200;
 // Tolerance
 t = 0.2;
 
+// XXX manual adjustment when the bar is too thick and the cylinder on the bar connector needs to be wider
+bar_connector_extra_radius = 2.5;
+
 module __Customizer_Limit__() {}
 // Minimum angle
 $fa = 0.5;
@@ -64,8 +67,10 @@ module surface_bar()
 
 module bar_connector()
 {
+    /* kludge radius */
+    kradius = hradius + bar_connector_extra_radius;
     bc_height = 50;
-    hole_w = bar_height + hheight*2;
+    hole_w = bar_height + hheight*4;
     /* leave a little room after the hirthJoint ends */
     hole_h = in_radius * 2 + 2;
     union() {
@@ -76,16 +81,16 @@ module bar_connector()
 	     */
 	    union() {
 		up(bc_height) hirthJointSinus(hradius, hteeth, hheight);
-		cylinder(h = bc_height, r = hradius);
+		cylinder(h = bc_height, r = kradius);
 	    }
 	    mirror([0, 0, 1]) metric_bolt(size=4, l=bc_height*2, pitch=0);
 	    //mirror([0, 0, 1]) metric_bolt(size=6, l=bc_height*0.85, pitch=0);
 	    /* nut hole so we can have the screw coming from the sleeve */
 	    up(hole_h) metric_nut(size=4, hole=false);
-	    mirror([0, 0, 1]) fillet_cylinder_mask(r=hradius, fillet=10);
-	    up(hole_h/2) cube([hole_w, hradius*2, hole_h], center=true);
-	    up(in_radius) left(hradius) rotate([0, 90, 0]) metric_nut(size=4, hole=false);
-	    up(in_radius) right(hradius) rotate([0, 90, 0]) metric_bolt(size=4, l=hradius*2, pitch=0);
+	    mirror([0, 0, 1]) fillet_cylinder_mask(r=kradius, fillet=10);
+	    up(hole_h/2) cube([hole_w, kradius*2, hole_h], center=true);
+	    up(in_radius) left(kradius) rotate([0, 90, 0]) metric_nut(size=4, hole=false);
+	    up(in_radius) right(kradius) rotate([0, 90, 0]) metric_bolt(size=4, l=kradius*2, pitch=0);
 	}
 	right(hole_w/2) up(in_radius) rotate([0, 270, 0]) hirthJointSinus(in_radius, hteeth, hheight);
 	left(hole_w/2) up(in_radius) rotate([0, 90, 0]) hirthJointSinus(in_radius, hteeth, hheight);
