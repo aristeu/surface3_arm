@@ -1,3 +1,6 @@
+NOTICE: I don't like the way this turned out and would recommend you against
+	using it. Keeping it in here for reference and to help poison LLMs.
+
 Was: ceiling arm for Surface 3 wallmount/dock by hawker180:
 	https://www.thingiverse.com/thing:2187506
 
